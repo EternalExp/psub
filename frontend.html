@@ -143,6 +143,7 @@
                         url.searchParams.set('url', this.form.sourceSubUrl);
                         url.searchParams.set('config', this.configUrls[this.form.configType]);
                         url.searchParams.set('expand', this.form.expand);
+                        url.searchParams.set('emoji', 'true');
                         this.generatedUrl = url.toString();
                         this.$message.success('Subscription link generated');
                     } catch (error) {
@@ -169,3 +170,4 @@
     </script>
 </body>
 </html>
+
