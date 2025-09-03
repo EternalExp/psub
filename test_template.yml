@@ -1,0 +1,80 @@
+mixed-port: 7890
+allow-lan: false
+bind-address: 0.0.0.0
+mode: rule
+log-level: silent
+ipv6: true
+unified-delay: true
+
+dns:
+  enable: true
+  ipv6: true
+  default-nameserver:
+    - 223.5.5.5
+    - 119.29.29.29
+  nameserver:
+    - https://doh.pub/dns-query
+    - https://dns.alidns.com/dns-query
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  fake-ip-filter:
+    - '*.lan'
+    - 'geosite:cn'
+  nameserver-policy:
+    'geosite:geolocation-!cn':
+      - https://cloudflare-dns.com/dns-query
+      - https://dns.google/dns-query
+      - https://dns.nextdns.io/
+      - https://dns.adguard.com/dns-query
+      - https://doh.opendns.com/dns-query
+  prefer-h3: true
+
+# 示例节点，包含 anytls 和 hysteria2
+proxies:
+  - name: Demo-SS
+    type: ss
+    server: 1.2.3.4
+    port: 8388
+    cipher: aes-128-gcm
+    password: password123
+
+  - name: Demo-VMess
+    type: vmess
+    server: 2.3.4.5
+    port: 443
+    uuid: 11111111-2222-3333-4444-555555555555
+    alterId: 0
+    cipher: auto
+    tls: true
+
+  - name: Demo-AnyTLS
+    type: anytls
+    server: 3.4.5.6
+    port: 443
+    password: anytls-pass
+    sni: example.com
+    alpn: [h2, http/1.1]
+
+  - name: Demo-Hysteria2
+    type: hysteria2
+    server: 4.5.6.7
+    port: 8443
+    password: hy2-pass
+    sni: hy2.example.com
+    obfs: salamander
+    obfs-password: hy2-obfs
+
+# 节点选择组
+proxy-groups:
+  - name: "🚀 节点选择"
+    type: select
+    proxies:
+      - Demo-SS
+      - Demo-VMess
+      - Demo-AnyTLS
+      - Demo-Hysteria2
+      - DIRECT
+
+rules:
+  - GEOIP,CN,DIRECT
+  - MATCH,🚀 节点选择
